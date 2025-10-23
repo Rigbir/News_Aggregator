@@ -1,0 +1,43 @@
+# Configuration for CollectorService
+components_manager:
+  task_processors:
+    main-task-processor:
+      worker_threads: 4
+    fs-task-processor:
+      worker_threads: 4
+
+  default_task_processor: main-task-processor
+
+  components:
+    server:
+      listener:
+        port: 8081
+        task_processor: main-task-processor
+
+    logging:
+      loggers:
+        default:
+          file_path: '@stderr'
+          level: debug
+          overflow_behavior: discard
+
+    collector-service:
+      collection_interval_seconds: 30
+      news_sources:
+        - name: "Test News Feed"
+          url: "file:///Users/marat/newsAggregator/test_rss.xml"
+          category: "general"
+        - name: "BBC News"
+          url: "http://feeds.bbci.co.uk/news/rss.xml"
+          category: "world"
+        - name: "Reuters"
+          url: "https://feeds.reuters.com/reuters/topNews"
+          category: "world"
+        - name: "TechCrunch"
+          url: "https://techcrunch.com/feed/"
+          category: "technology"
+
+    collector-status-handler:
+      path: /status
+      method: GET
+      task_processor: main-task-processor

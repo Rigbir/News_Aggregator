@@ -1,0 +1,38 @@
+# Configuration for StorageService
+components_manager:
+  task_processors:
+    main-task-processor:
+      worker_threads: 4
+    fs-task-processor:
+      worker_threads: 4
+
+  default_task_processor: main-task-processor
+
+  components:
+    server:
+      listener:
+        port: 8080
+        task_processor: main-task-processor
+
+    logging:
+      loggers:
+        default:
+          file_path: '@stderr'
+          level: debug
+          overflow_behavior: discard
+
+    ping-handler:
+      path: /ping
+      method: GET
+      task_processor: main-task-processor
+
+
+    news-latest-handler:
+      path: /news/latest
+      method: GET
+      task_processor: main-task-processor
+
+    news-add-handler:
+      path: /news/add
+      method: POST
+      task_processor: main-task-processor

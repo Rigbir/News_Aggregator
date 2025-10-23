@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Aggregator API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .json-output {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📰 News Aggregator API Test</h1>
+        
+        <div class="controls">
+            <label for="limit">Limit:</label>
+            <input type="number" id="limit" value="5" min="1" max="100">
+            
+            <button onclick="fetchNews()">Get News</button>
+            <button onclick="fetchHealth()">Health Check</button>
+            <button onclick="clearOutput()">Clear</button>
+        </div>
+        
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8083';
+        
+        function formatJSON(obj) {
+            return JSON.stringify(obj, null, 2);
+        }
+        
+        function showOutput(content, isError = false) {
+            const output = document.getElementById('output');
+            const className = isError ? 'error' : 'json-output';
+            output.innerHTML = `<div class="${className}">${content}</div>`;
+        }
+        
+        async function fetchNews() {
+            const limit = document.getElementById('limit').value;
+            const timestamp = new Date().getTime();
+            const url = `${API_BASE}/news?limit=${limit}&_t=${timestamp}`;
+            
+            try {
+                showOutput(`Loading news with limit=${limit}...`);
+                
+                const response = await fetch(url, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showOutput(formatJSON(data));
+                } else {
+                    showOutput(`Error ${response.status}: ${data.message || 'Unknown error'}`, true);
+                }
+            } catch (error) {
+                showOutput(`Network Error: ${error.message}`, true);
+            }
+        }
+        
+        async function fetchHealth() {
+            try {
+                showOutput('Checking health...');
+                
+                const timestamp = new Date().getTime();
+                const response = await fetch(`${API_BASE}/health?_t=${timestamp}`, {
+                    method: 'GET'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showOutput(formatJSON(data));
+                } else {
+                    showOutput(`Health Check Failed: ${data.message || 'Unknown error'}`, true);
+                }
+            } catch (error) {
+                showOutput(`Health Check Error: ${error.message}`, true);
+            }
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+        }
+        
+        // Auto-fetch on page load
+        window.onload = function() {
+            fetchNews();
+        };
+    </script>
+</body>
+</html>

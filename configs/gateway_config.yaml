@@ -1,0 +1,34 @@
+# Configuration for API Gateway
+components_manager:
+  task_processors:
+    main-task-processor:
+      worker_threads: 4
+    fs-task-processor:
+      worker_threads: 4
+
+  default_task_processor: main-task-processor
+
+  components:
+    server:
+      listener:
+        port: 8083
+        task_processor: main-task-processor
+
+    logging:
+      loggers:
+        default:
+          file_path: '@stderr'
+          level: debug
+          overflow_behavior: discard
+
+    # redis-client and http-client temporarily disabled
+
+    news-handler:
+      path: /news
+      method: GET
+      task_processor: main-task-processor
+
+    health-handler:
+      path: /health
+      method: GET
+      task_processor: main-task-processor
