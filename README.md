@@ -163,3 +163,7 @@ Logs are stored in the `logs/` directory:
 - `storage.log` - StorageService logs
 - `collector.log` - CollectorService logs  
 - `gateway.log` - API Gateway logs
+
+## Screenshots
+### HTML Client
+![HTML Client](screenshots/html-client.png)
